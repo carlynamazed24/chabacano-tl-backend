@@ -1,43 +1,59 @@
 import express from "express";
 import cors from "cors";
+import session from "express-session";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
 import homepageRoutes from "./routes/homepage.js";
+import storyPageRoutes from "./routes/storyPage.js";
+import dictionaryPageRoutes from "./routes/dictionary.js";
+
 import {
   corsOptions,
   handlePreflightRequest,
   handleCommonRequest,
 } from "./utils/cors.js";
 
+dotenv.config();
+
 // Initialize Express app
 const app = express();
 
-// Middleware to handle CORS and preflight requests
 app.use(cors(corsOptions));
+app.use(
+  session({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 app.use(express.json());
 
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     handlePreflightRequest(req, res);
   }
-  next();
-});
-
-app.use((req, res, next) => {
   handleCommonRequest(req, res);
   next();
 });
 
 // Register routes
-app.use("/api/edit", homepageRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/homepage", homepageRoutes);
+app.use("/api/storypage", storyPageRoutes);
+app.use("/api/dictionary", dictionaryPageRoutes);
 
-// Root endpoint
 app.get("/", (req, res) => {
   res.send("Welcome to the API!");
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  console.error("Unhandled Error", err);
+  res.status(err.status || 500).json({
+    status: "error",
+    message: err.message || "Internal Server Error",
+  });
 });
 
 // Start the server

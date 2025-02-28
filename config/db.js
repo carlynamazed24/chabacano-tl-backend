@@ -6,18 +6,35 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// Get equivalent of __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load the environment variablesss
-const { DB_PASSWORD, DB_HOST, DB_USERNAME, DB_DATABASE } = process.env;
+const {
+  DB_DEV_HOST,
+  DB_DEV_USERNAME,
+  DB_DEV_DATABASE,
+  DB_PASSWORD,
+  DB_HOST,
+  DB_USERNAME,
+  DB_DATABASE,
+} = process.env;
+
+console.log("DB_DEV_HOST", DB_DEV_HOST);
+console.log("DB_DEV_USERNAME", DB_DEV_USERNAME);
+console.log("DB_DEV_DATABASE", DB_DEV_DATABASE);
+
+console.log("DB_HOST", DB_HOST);
+console.log("DB_USERNAME", DB_USERNAME);
+console.log("DB_DATABASE", DB_DATABASE);
+
+console.log("DB_PASSWORD", DB_PASSWORD);
 
 const dbConfig = {
-  host: DB_HOST,
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_DATABASE,
+  host: process.env.APP_ENV === "production" ? DB_HOST : DB_DEV_HOST,
+  user: process.env.APP_ENV === "production" ? DB_USERNAME : DB_DEV_USERNAME,
+  password: process.env.APP_ENV === "production" ? DB_PASSWORD : "",
+  database:
+    process.env.APP_ENV === "production" ? DB_DATABASE : DB_DEV_DATABASE,
 };
 
 if (process.env.APP_ENV === "production") {
