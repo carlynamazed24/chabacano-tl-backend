@@ -19,16 +19,6 @@ const {
   DB_DATABASE,
 } = process.env;
 
-console.log("DB_DEV_HOST", DB_DEV_HOST);
-console.log("DB_DEV_USERNAME", DB_DEV_USERNAME);
-console.log("DB_DEV_DATABASE", DB_DEV_DATABASE);
-
-console.log("DB_HOST", DB_HOST);
-console.log("DB_USERNAME", DB_USERNAME);
-console.log("DB_DATABASE", DB_DATABASE);
-
-console.log("DB_PASSWORD", DB_PASSWORD);
-
 const dbConfig = {
   host: process.env.APP_ENV === "production" ? DB_HOST : DB_DEV_HOST,
   user: process.env.APP_ENV === "production" ? DB_USERNAME : DB_DEV_USERNAME,

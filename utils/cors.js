@@ -16,8 +16,14 @@ const corsOptions = {
 };
 
 const httpsLocalHostingOptions = {
-  key: fs.readFileSync("./certs/localhost-key.pem"),
-  cert: fs.readFileSync("./certs/localhost.pem"),
+  key:
+    process.env.APP_ENV === "production"
+      ? ""
+      : fs.readFileSync("./certs/localhost-key.pem"),
+  cert:
+    process.env.APP_ENV === "production"
+      ? ""
+      : fs.readFileSync("./certs/localhost.pem"),
 };
 
 const handlePreflightRequest = (req, res) => {
