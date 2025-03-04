@@ -29,7 +29,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "None",
+      sameSite: "none",
     },
   })
 );

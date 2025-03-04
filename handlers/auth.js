@@ -29,9 +29,8 @@ const login = async (req, res) => {
 
     res.cookie("connect.sid", req.sessionID, {
       httpOnly: true,
-      secure: process.env.APP_ENV === "production",
-      sameSite: "None",
-      path: "/",
+      secure: true,
+      sameSite: "none",
     });
 
     req.session.admin = { username: admin.username };
