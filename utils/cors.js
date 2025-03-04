@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
+import fs from "fs";
 import { ALLOWED_ORIGINS } from "./constants.js";
+
+dotenv.config();
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -9,6 +13,11 @@ const corsOptions = {
     }
   },
   credentials: true,
+};
+
+const httpsLocalHostingOptions = {
+  key: fs.readFileSync("./certs/localhost-key.pem"),
+  cert: fs.readFileSync("./certs/localhost.pem"),
 };
 
 const handlePreflightRequest = (req, res) => {
@@ -55,4 +64,9 @@ const isInAllowedOrigins = (origin) => {
   return ALLOWED_ORIGINS.includes(origin);
 };
 
-export { corsOptions, handlePreflightRequest, handleCommonRequest };
+export {
+  corsOptions,
+  httpsLocalHostingOptions,
+  handlePreflightRequest,
+  handleCommonRequest,
+};

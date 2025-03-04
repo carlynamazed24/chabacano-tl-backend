@@ -1,4 +1,5 @@
 import express from "express";
+import https from "https";
 import cors from "cors";
 import session from "express-session";
 import dotenv from "dotenv";
@@ -9,6 +10,7 @@ import dictionaryPageRoutes from "./routes/dictionary.js";
 
 import {
   corsOptions,
+  httpsLocalHostingOptions,
   handlePreflightRequest,
   handleCommonRequest,
 } from "./utils/cors.js";
@@ -24,7 +26,11 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    },
   })
 );
 app.use(express.json());
@@ -58,6 +64,7 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const PORT = process.env.APP_PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+
+https.createServer(httpsLocalHostingOptions, app).listen(PORT, () => {
+  console.log("Server running at https://localhost:5000");
 });
