@@ -65,7 +65,11 @@ app.use((err, req, res, next) => {
 // Start the server
 const PORT = process.env.APP_PORT || 5000;
 
-process.env.APP_ENV === "development" &&
+/* process.env.APP_ENV === "development" &&
   https.createServer(httpsLocalHostingOptions, app).listen(PORT, () => {
     console.log("Server running at https://localhost:5000");
-  });
+  }); */
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
