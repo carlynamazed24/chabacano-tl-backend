@@ -21,6 +21,9 @@ dotenv.config();
 const app = express();
 
 app.use(cors(corsOptions));
+
+app.set("trust proxy", 1); // Add this BEFORE session middleware
+
 app.use(
   session({
     secret: process.env.SECRET_KEY,
@@ -29,9 +32,9 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-      path: "/",
+      sameSite: "None",
     },
+    proxy: true,
   })
 );
 app.use(express.json());
@@ -70,6 +73,16 @@ const PORT = process.env.APP_PORT || 5000;
   https.createServer(httpsLocalHostingOptions, app).listen(PORT, () => {
     console.log("Server running at https://localhost:5000");
   }); */
+
+if (process.env.NODE_ENV === "production") {
+  app.use((req, res, next) => {
+    if (req.header("x-forwarded-proto") !== "https") {
+      res.redirect(`https://${req.header("host")}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

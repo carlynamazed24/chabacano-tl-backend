@@ -2,6 +2,7 @@ const ALLOWED_ORIGINS = [
   "https://chabacano-tl-frontend.vercel.app",
   "https://chabacano-translator.vercel.app",
   "https://localhost:5173",
+  "https://*.vercel.app",
 ];
 
 const DB_TABLES = {

@@ -43,9 +43,11 @@ const handlePreflightRequest = (req, res) => {
     "Cache-Control",
     "no-store, no-cache, must-revalidate, proxy-revalidate"
   );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Expose-Headers", "Set-Cookie");
+  res.setHeader("Vary", "Origin");
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
-  res.setHeader("Access-Control-Allow-Credentials", true);
   return res.status(200).end();
 };
 
@@ -63,6 +65,8 @@ const handleCommonRequest = (req, res) => {
       "Content-Type, Authorization"
     );
     res.setHeader("Access-Control-Allow-Credentials", true);
+    res.setHeader("Access-Control-Expose-Headers", "Set-Cookie");
+    res.setHeader("Vary", "Origin");
   }
 };
 

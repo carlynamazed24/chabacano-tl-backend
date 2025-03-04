@@ -27,13 +27,6 @@ const login = async (req, res) => {
       return sendResponse.failed(res, "Invalid username or password", 400);
     }
 
-    res.cookie("connect.sid", req.sessionID, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
-
     req.session.admin = { username: admin.username };
 
     sendResponse.success(
