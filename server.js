@@ -30,6 +30,7 @@ app.use(
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      path: "/",
     },
   })
 );
