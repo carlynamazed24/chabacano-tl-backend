@@ -31,7 +31,6 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.APP_ENV === "production",
       sameSite: "None",
-      domain: "vercel.app",
       path: "/",
     });
 

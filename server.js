@@ -30,7 +30,6 @@ app.use(
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      domain: process.env.APP_ENV === "production" ? "vercel.app" : "localhost",
     },
   })
 );
