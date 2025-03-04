@@ -27,6 +27,14 @@ const login = async (req, res) => {
       return sendResponse.failed(res, "Invalid username or password", 400);
     }
 
+    res.cookie("connect.sid", req.sessionID, {
+      httpOnly: true,
+      secure: process.env.APP_ENV === "production",
+      sameSite: "None",
+      domain: "vercel.app",
+      path: "/",
+    });
+
     req.session.admin = { username: admin.username };
 
     sendResponse.success(
