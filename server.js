@@ -29,7 +29,8 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "None",
+      domain: process.env.APP_ENV === "production" ? "vercel.app" : "localhost",
     },
   })
 );

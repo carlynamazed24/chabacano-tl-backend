@@ -27,7 +27,7 @@ const login = async (req, res) => {
       return sendResponse.failed(res, "Invalid username or password", 400);
     }
 
-    req.session.admin = { id: admin.id, username: admin.username };
+    req.session.admin = { username: admin.username };
 
     sendResponse.success(
       res,
