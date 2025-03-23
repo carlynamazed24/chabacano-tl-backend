@@ -11,6 +11,4 @@ export const {
   DB_DATABASE,
   SECRET_KEY,
   APP_PORT,
-  PLAYHT_USER_ID,
-  PLAYHT_SECRET_KEY,
 } = process.env;
