@@ -1,12 +1,13 @@
 import express from "express";
-import asyncHandler from "../utils/asyncHandler.js";
+
 import {
   getDictionaryEntries,
   addNewDictionaryEntry,
   updateDictionaryEntry,
   deleteDictionaryEntry,
   getDictionaryEntry,
-} from "../handlers/dictionary.js";
+} from "../controllers/dictionary.controller.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 

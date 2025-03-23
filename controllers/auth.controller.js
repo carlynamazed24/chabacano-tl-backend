@@ -1,12 +1,10 @@
 import bcrypt from "bcrypt";
-import connectToDatabase from "../config/db.js";
+import { db } from "../config/db.js";
 import sendResponse from "../utils/responseHelper.js";
 import { DB_TABLES } from "../utils/constants.js";
 
 const login = async (req, res) => {
   const { username, password } = req.body;
-
-  const db = await connectToDatabase();
 
   const query = `SELECT * FROM ${DB_TABLES.ADMINS}  WHERE username = ?`;
   const [rows] = await db.execute(query, [username]);
@@ -49,15 +47,16 @@ const logout = (req, res) => {
 };
 
 const checkAuth = (req, res) => {
-  if (req.session.admin) {
-    return sendResponse.success(
-      res,
-      "Authenticated",
-      { admin: req.session.admin },
-      200
-    );
+  if (!req.session.admin) {
+    return sendResponse.failed(res, "Not authenticated", 401);
   }
-  return sendResponse.failed(res, "Not authenticated", 401);
+
+  return sendResponse.success(
+    res,
+    "Authenticated",
+    { admin: req.session.admin },
+    200
+  );
 };
 
 export { login, logout, checkAuth };

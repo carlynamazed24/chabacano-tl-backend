@@ -1,4 +1,4 @@
-import connectToDatabase from "../config/db.js";
+import { db } from "../config/db.js";
 import sendResponse from "../utils/responseHelper.js";
 import { DB_TABLES } from "../utils/constants.js";
 
@@ -37,8 +37,6 @@ const addNewSubheadersStory = async (db, storyID, subheaders) => {
 };
 
 const getStoryPageContents = async (req, res) => {
-  const db = await connectToDatabase();
-
   const query = `SELECT * FROM ${DB_TABLES.STORY} ORDER BY sectionOrder DESC`;
   const [rows] = await db.execute(query);
 
@@ -67,8 +65,6 @@ const getStoryPageContents = async (req, res) => {
 
 const getStorySectionContent = async (req, res) => {
   const { storyID } = req.params;
-
-  const db = await connectToDatabase();
 
   const query = `SELECT * FROM ${DB_TABLES.STORY} WHERE id = ?`;
   const [story] = await db.execute(query, [storyID]);
@@ -101,8 +97,6 @@ const getStorySectionContent = async (req, res) => {
 const addNewStoryHeader = async (req, res) => {
   const formData = req.body;
 
-  const db = await connectToDatabase();
-
   const query = `INSERT INTO ${DB_TABLES.STORY} (headingTitle, headingContent, sectionOrder) VALUES (?, ?, ?)`;
   const getExistingOrderQuery = `SELECT MAX(sectionOrder) as maxOrder FROM ${DB_TABLES.STORY}`;
 
@@ -131,8 +125,6 @@ const updateStoryHeader = async (req, res) => {
   const formData = req.body;
   const { storyID } = req.params;
 
-  const db = await connectToDatabase();
-
   const query = `UPDATE ${DB_TABLES.STORY} SET headingTitle = ?, headingContent = ? WHERE id = ?`;
   const query2 = `DELETE FROM ${DB_TABLES.SUBHEADERS} WHERE headingID = ?`; // Delete all subheaders first
 
@@ -154,8 +146,6 @@ const updateStoryHeader = async (req, res) => {
 };
 
 const deleteStoryHeader = async (req, res) => {
-  const db = await connectToDatabase();
-
   const { storyID } = req.params;
 
   const query = `DELETE FROM ${DB_TABLES.STORY} WHERE id = ?`;
@@ -175,8 +165,6 @@ const deleteStoryHeader = async (req, res) => {
 const changeOrderSection = async (req, res) => {
   const { direction } = req.body;
   const { storyID } = req.params;
-
-  const db = await connectToDatabase();
 
   // Get the current story
   const query = `SELECT * FROM ${DB_TABLES.STORY} WHERE id = ?`;

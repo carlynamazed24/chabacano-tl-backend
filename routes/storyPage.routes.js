@@ -1,5 +1,5 @@
 import express from "express";
-import asyncHandler from "../utils/asyncHandler.js";
+
 import {
   getStoryPageContents,
   getStorySectionContent,
@@ -7,7 +7,8 @@ import {
   updateStoryHeader,
   deleteStoryHeader,
   changeOrderSection,
-} from "../handlers/storyPage.js";
+} from "../controllers/storyPage.controller.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 

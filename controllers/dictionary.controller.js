@@ -1,10 +1,8 @@
-import connectToDatabase from "../config/db.js";
+import { db } from "../config/db.js";
 import sendResponse from "../utils/responseHelper.js";
 import { DB_TABLES } from "../utils/constants.js";
 
 const getDictionaryEntries = async (req, res) => {
-  const db = await connectToDatabase();
-
   const query = `SELECT * FROM ${DB_TABLES.DICTIONARY}`;
 
   const [rows] = await db.execute(query);
@@ -17,7 +15,6 @@ const getDictionaryEntries = async (req, res) => {
 };
 
 const getDictionaryEntry = async (req, res) => {
-  const db = await connectToDatabase();
   const { id } = req.params;
 
   const query = `SELECT * FROM ${DB_TABLES.DICTIONARY} WHERE id = ?`;
@@ -33,8 +30,6 @@ const getDictionaryEntry = async (req, res) => {
 
 const addNewDictionaryEntry = async (req, res) => {
   const formData = req.body;
-
-  const db = await connectToDatabase();
 
   const query = `INSERT INTO ${DB_TABLES.DICTIONARY} (chabacanoLang, tagalogLang, englishLang, definition) VALUES (?, ?, ?, ?)`;
 
@@ -58,8 +53,6 @@ const updateDictionaryEntry = async (req, res) => {
   const formData = req.body;
   const { wordID } = req.params;
 
-  const db = await connectToDatabase();
-
   const query = `UPDATE ${DB_TABLES.DICTIONARY} SET chabacanoLang = ?, tagalogLang = ?, englishLang = ?, definition = ? WHERE id = ?`;
 
   const updatedData = [
@@ -80,8 +73,6 @@ const updateDictionaryEntry = async (req, res) => {
 };
 
 const deleteDictionaryEntry = async (req, res) => {
-  const db = await connectToDatabase();
-
   const { wordID } = req.params;
 
   const query = `DELETE FROM ${DB_TABLES.DICTIONARY} WHERE id = ?`;

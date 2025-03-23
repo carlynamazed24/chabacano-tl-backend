@@ -1,32 +1,32 @@
 import express from "express";
-import https from "https";
 import cors from "cors";
 import session from "express-session";
-import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js";
-import homepageRoutes from "./routes/homepage.js";
-import storyPageRoutes from "./routes/storyPage.js";
-import dictionaryPageRoutes from "./routes/dictionary.js";
+
+import { APP_ENV, SECRET_KEY, APP_PORT } from "./config/env.js";
+
+import connectToDatabase from "./config/db.js";
+
+import errorHandler from "./middlewares/errorHandler.js";
+
+import authRoutes from "./routes/auth.routes.js";
+import homepageRoutes from "./routes/homepage.routes.js";
+import storyPageRoutes from "./routes/storyPage.routes.js";
+import dictionaryPageRoutes from "./routes/dictionary.routes.js";
 
 import {
   corsOptions,
-  httpsLocalHostingOptions,
   handlePreflightRequest,
   handleCommonRequest,
 } from "./utils/cors.js";
-
-dotenv.config();
 
 // Initialize Express app
 const app = express();
 
 app.use(cors(corsOptions));
-
-app.set("trust proxy", 1); // Add this BEFORE session middleware
-
+app.set("trust proxy", 1);
 app.use(
   session({
-    secret: process.env.SECRET_KEY,
+    secret: SECRET_KEY,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -58,23 +58,12 @@ app.get("/", (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error("Unhandled Error", err);
-  res.status(err.status || 500).json({
-    status: "error",
-    message: err.message || "Internal Server Error",
-  });
-});
+app.use(errorHandler);
 
 // Start the server
-const PORT = process.env.APP_PORT || 5000;
+const PORT = APP_PORT || 5000;
 
-/* process.env.APP_ENV === "development" &&
-  https.createServer(httpsLocalHostingOptions, app).listen(PORT, () => {
-    console.log("Server running at https://localhost:5000");
-  }); */
-
-if (process.env.NODE_ENV === "production") {
+if (APP_ENV === "production") {
   app.use((req, res, next) => {
     if (req.header("x-forwarded-proto") !== "https") {
       res.redirect(`https://${req.header("host")}${req.url}`);
@@ -86,4 +75,5 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  connectToDatabase();
 });

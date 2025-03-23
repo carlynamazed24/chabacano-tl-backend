@@ -1,33 +1,30 @@
 import mysql from "mysql2/promise";
 import fs from "fs";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-dotenv.config();
+import {
+  APP_ENV,
+  DB_HOST,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_DATABASE,
+  DB_DEV_DATABASE,
+} from "./env.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const {
-  DB_DEV_HOST,
-  DB_DEV_USERNAME,
-  DB_DEV_DATABASE,
-  DB_PASSWORD,
-  DB_HOST,
-  DB_USERNAME,
-  DB_DATABASE,
-} = process.env;
+export let db = null;
 
 const dbConfig = {
-  host: process.env.APP_ENV === "production" ? DB_HOST : DB_DEV_HOST,
-  user: process.env.APP_ENV === "production" ? DB_USERNAME : DB_DEV_USERNAME,
-  password: process.env.APP_ENV === "production" ? DB_PASSWORD : "",
-  database:
-    process.env.APP_ENV === "production" ? DB_DATABASE : DB_DEV_DATABASE,
+  host: APP_ENV === "production" ? DB_HOST : "localhost",
+  user: APP_ENV === "production" ? DB_USERNAME : "root",
+  password: APP_ENV === "production" ? DB_PASSWORD : "",
+  database: APP_ENV === "production" ? DB_DATABASE : DB_DEV_DATABASE,
 };
 
-if (process.env.APP_ENV === "production") {
+if (APP_ENV === "production") {
   dbConfig.ssl = {
     rejectUnauthorized: true,
     ca: fs.readFileSync(path.resolve(__dirname, "isrgrootx1.pem"), "utf8"),
@@ -36,11 +33,9 @@ if (process.env.APP_ENV === "production") {
 
 const connectToDatabase = async () => {
   try {
-    const db = await mysql.createConnection(dbConfig);
-    console.log(
-      `Connected to the ${process.env.APP_ENV} database successfully.`
-    );
-    return db;
+    const database = await mysql.createConnection(dbConfig);
+    console.log(`Connected to the ${APP_ENV} database successfully.`);
+    db = database;
   } catch (err) {
     console.error("Database connection failed:", err.message);
     process.exit(1);

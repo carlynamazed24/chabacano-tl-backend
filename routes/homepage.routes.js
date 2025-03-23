@@ -1,9 +1,10 @@
 import express from "express";
-import asyncHandler from "../utils/asyncHandler.js";
+
 import {
   getHomePageContents,
   editHomePageContents,
-} from "../handlers/homepage.js";
+} from "../controllers/homepage.controller.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 

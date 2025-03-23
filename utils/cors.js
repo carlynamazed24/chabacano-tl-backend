@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 import fs from "fs";
+
+import { APP_ENV } from "../config/env.js";
 import { ALLOWED_ORIGINS } from "./constants.js";
 
 dotenv.config();
@@ -16,12 +18,10 @@ const corsOptions = {
 };
 
 const httpsLocalHostingOptions = {
-  key:
-    process.env.APP_ENV === "production"
+  key: APP_ENV === "production"
       ? ""
       : fs.readFileSync("./certs/localhost-key.pem"),
-  cert:
-    process.env.APP_ENV === "production"
+  cert: APP_ENV === "production"
       ? ""
       : fs.readFileSync("./certs/localhost.pem"),
 };

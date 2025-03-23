@@ -1,10 +1,9 @@
-import connectToDatabase from "../config/db.js";
 import sendResponse from "../utils/responseHelper.js";
+
+import { db } from "../config/db.js";
 import { DB_TABLES } from "../utils/constants.js";
 
 const getHomePageContents = async (req, res) => {
-  const db = await connectToDatabase();
-
   const query = `SELECT * FROM ${DB_TABLES.HOMEPAGE}  WHERE id = 1`;
 
   const [rows] = await db.execute(query);
@@ -22,9 +21,6 @@ const getHomePageContents = async (req, res) => {
 
 const editHomePageContents = async (req, res) => {
   const formData = req.body;
-
-  const db = await connectToDatabase();
-
   const query = `UPDATE ${DB_TABLES.HOMEPAGE}  SET heroTitle = ?, heroContent = ?, aboutUsTitle = ?, aboutUsContent = ?, ourMissionTitle = ?, ourMissionContent = ?, ourVisionTitle = ?, ourVisionContent = ?, whyChabacanoTitle = ?, whyChabacanoContent = ? WHERE id = 1`;
 
   const updatedData = [
