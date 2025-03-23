@@ -64,7 +64,7 @@ app.use(errorHandler);
 const PORT = APP_PORT || 5000;
 
 if (APP_ENV === "production") {
-  connectToDatabase();
+  await connectToDatabase();
   app.use((req, res, next) => {
     if (req.header("x-forwarded-proto") !== "https") {
       res.redirect(`https://${req.header("host")}${req.url}`);
