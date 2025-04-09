@@ -15,13 +15,14 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export let db = null;
-
 const dbConfig = {
   host: APP_ENV === "production" ? DB_HOST : "localhost",
   user: APP_ENV === "production" ? DB_USERNAME : "root",
   password: APP_ENV === "production" ? DB_PASSWORD : "",
   database: APP_ENV === "production" ? DB_DATABASE : DB_DEV_DATABASE,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 };
 
 if (APP_ENV === "production") {
@@ -31,11 +32,16 @@ if (APP_ENV === "production") {
   };
 }
 
+const pool = mysql.createPool(dbConfig);
+
+export const db = {
+  execute: (...args) => pool.execute(...args),
+};
+
 const connectToDatabase = async () => {
   try {
-    const database = await mysql.createConnection(dbConfig);
+    await pool.getConnection(); // Just test connection
     console.log(`Connected to the ${APP_ENV} database successfully.`);
-    db = database;
   } catch (err) {
     console.error("Database connection failed:", err.message);
     process.exit(1);

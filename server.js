@@ -76,5 +76,5 @@ if (APP_ENV === "production") {
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
-  connectToDatabase();
+  // connectToDatabase();
 });
