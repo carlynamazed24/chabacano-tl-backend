@@ -1,29 +1,16 @@
-import dotenv from "dotenv";
-import fs from "fs";
-
-import { APP_ENV } from "../config/env.js";
 import { ALLOWED_ORIGINS } from "./constants.js";
-
-dotenv.config();
 
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || isInAllowedOrigins(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      const error = new Error("Origin not allowed by CORS");
+      error.status = 403;
+      callback(error);
     }
   },
   credentials: true,
-};
-
-const httpsLocalHostingOptions = {
-  key: APP_ENV === "production"
-      ? ""
-      : fs.readFileSync("./certs/localhost-key.pem"),
-  cert: APP_ENV === "production"
-      ? ""
-      : fs.readFileSync("./certs/localhost.pem"),
 };
 
 const handlePreflightRequest = (req, res) => {
@@ -76,7 +63,6 @@ const isInAllowedOrigins = (origin) => {
 
 export {
   corsOptions,
-  httpsLocalHostingOptions,
   handlePreflightRequest,
   handleCommonRequest,
 };

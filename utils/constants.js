@@ -1,4 +1,5 @@
 const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
   "https://chabacano-tl-frontend.vercel.app",
   "https://chabacano-translator.vercel.app",
   "https://localhost:5173",

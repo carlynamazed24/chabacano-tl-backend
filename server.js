@@ -19,33 +19,53 @@ import {
   handleCommonRequest,
 } from "./utils/cors.js";
 
+const isProduction = APP_ENV === "production";
+const SESSION_SECRET =
+  SECRET_KEY || (isProduction ? undefined : "dev-session-secret");
+
+if (!SESSION_SECRET) {
+  throw new Error("SECRET_KEY is required when APP_ENV is production");
+}
+
 // Initialize Express app
 const app = express();
 
 app.use(cors(corsOptions));
-app.set("trust proxy", 1);
+app.set("trust proxy", isProduction ? 1 : false);
 app.use(
   session({
-    secret: SECRET_KEY,
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     },
-    proxy: true,
+    proxy: isProduction,
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
-    handlePreflightRequest(req, res);
+    return handlePreflightRequest(req, res);
   }
   handleCommonRequest(req, res);
   next();
 });
+
+if (isProduction) {
+  await connectToDatabase();
+  app.use((req, res, next) => {
+    if (req.header("x-forwarded-proto") !== "https") {
+      res.redirect(`https://${req.header("host")}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
 
 // Register routes
 app.use("/api/auth", authRoutes);
@@ -62,17 +82,6 @@ app.use(errorHandler);
 
 // Start the server
 const PORT = APP_PORT || 5000;
-
-if (APP_ENV === "production") {
-  await connectToDatabase();
-  app.use((req, res, next) => {
-    if (req.header("x-forwarded-proto") !== "https") {
-      res.redirect(`https://${req.header("host")}${req.url}`);
-    } else {
-      next();
-    }
-  });
-}
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

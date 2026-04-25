@@ -10,22 +10,31 @@ import {
   DB_PASSWORD,
   DB_DATABASE,
   DB_DEV_DATABASE,
+  DB_PORT,
+  DB_SSL,
 } from "./env.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isProduction = APP_ENV === "production";
+const dbHost = DB_HOST || "localhost";
+const isLocalDatabaseHost = ["localhost", "127.0.0.1", "::1"].includes(dbHost);
+const shouldUseSsl =
+  DB_SSL === "true" || (DB_SSL !== "false" && (isProduction || !isLocalDatabaseHost));
+
 const dbConfig = {
-  host: APP_ENV === "production" ? DB_HOST : "localhost",
-  user: APP_ENV === "production" ? DB_USERNAME : "root",
-  password: APP_ENV === "production" ? DB_PASSWORD : "",
-  database: APP_ENV === "production" ? DB_DATABASE : DB_DEV_DATABASE,
+  host: dbHost,
+  port: Number(DB_PORT || 3306),
+  user: DB_USERNAME || "root",
+  password: DB_PASSWORD || "",
+  database: isProduction ? DB_DATABASE : DB_DEV_DATABASE || DB_DATABASE,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 };
 
-if (APP_ENV === "production") {
+if (shouldUseSsl) {
   dbConfig.ssl = {
     rejectUnauthorized: true,
     ca: fs.readFileSync(path.resolve(__dirname, "isrgrootx1.pem"), "utf8"),
@@ -40,7 +49,8 @@ export const db = {
 
 const connectToDatabase = async () => {
   try {
-    await pool.getConnection(); // Just test connection
+    const connection = await pool.getConnection();
+    connection.release();
     console.log(`Connected to the ${APP_ENV} database successfully.`);
   } catch (err) {
     console.error("Database connection failed:", err.message);
