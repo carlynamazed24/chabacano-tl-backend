@@ -12,6 +12,7 @@ import authRoutes from "./routes/auth.routes.js";
 import homepageRoutes from "./routes/homepage.routes.js";
 import storyPageRoutes from "./routes/storyPage.routes.js";
 import dictionaryPageRoutes from "./routes/dictionary.routes.js";
+import translationRoutes from "./routes/translation.routes.js";
 
 import {
   corsOptions,
@@ -72,6 +73,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/homepage", homepageRoutes);
 app.use("/api/storypage", storyPageRoutes);
 app.use("/api/dictionary", dictionaryPageRoutes);
+app.use("/api/translation", translationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the API!");

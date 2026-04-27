@@ -20,3 +20,17 @@ export const DB_PORT = env.DB_PORT;
 export const DB_SSL = env.DB_SSL;
 export const SECRET_KEY = env.SECRET_KEY;
 export const APP_PORT = env.APP_PORT;
+export const HUGGING_FACE_TRANSLATOR_API_URL =
+  env.HUGGING_FACE_TRANSLATOR_API_URL;
+export const OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
+export const OPENROUTER_API_URL =
+  env.OPENROUTER_API_URL ?? "https://openrouter.ai/api/v1/chat/completions";
+export const OPENROUTER_MODEL =
+  env.OPENROUTER_MODEL ?? "openai/gpt-oss-120b:free";
+export const OPENROUTER_SITE_URL =
+  env.OPENROUTER_SITE_URL ?? "https://chabacano-translator.vercel.app";
+export const OPENROUTER_APP_TITLE =
+  env.OPENROUTER_APP_TITLE ?? "Chabacano Translator";
+export const TRANSLATION_REQUEST_TIMEOUT_MS = Number(
+  env.TRANSLATION_REQUEST_TIMEOUT_MS ?? 60000
+);
