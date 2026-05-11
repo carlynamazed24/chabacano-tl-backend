@@ -22,6 +22,10 @@ export const SECRET_KEY = env.SECRET_KEY;
 export const APP_PORT = env.APP_PORT;
 export const HUGGING_FACE_TRANSLATOR_API_URL =
   env.HUGGING_FACE_TRANSLATOR_API_URL;
+export const OPENAI_API_KEY = env.OPENAI_API_KEY;
+export const OPENAI_API_URL =
+  env.OPENAI_API_URL ?? "https://api.openai.com/v1/chat/completions";
+export const OPENAI_MODEL = env.OPENAI_MODEL ?? "gpt-4o-mini";
 export const OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
 export const OPENROUTER_API_URL =
   env.OPENROUTER_API_URL ?? "https://openrouter.ai/api/v1/chat/completions";
@@ -31,6 +35,10 @@ export const OPENROUTER_SITE_URL =
   env.OPENROUTER_SITE_URL ?? "https://chabacano-translator.vercel.app";
 export const OPENROUTER_APP_TITLE =
   env.OPENROUTER_APP_TITLE ?? "Chabacano Translator";
+export const GEMINI_API_KEY = env.GEMINI_API_KEY;
+export const GEMINI_API_URL =
+  env.GEMINI_API_URL ?? "https://generativelanguage.googleapis.com/v1beta";
+export const GEMINI_MODEL = env.GEMINI_MODEL ?? "gemini-2.5-flash";
 export const TRANSLATION_REQUEST_TIMEOUT_MS = Number(
   env.TRANSLATION_REQUEST_TIMEOUT_MS ?? 60000
 );
