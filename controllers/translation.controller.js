@@ -57,6 +57,8 @@ const huggingFaceTranslationPairs = new Set([
   "english-to-chabacano",
 ]);
 
+const USER_TRANSLATION_ERROR_MESSAGE = "Error translating text";
+
 const sendTranslationError = (res, message, statusCode = 400) => {
   return res.status(statusCode).json({
     err: message,
@@ -216,9 +218,7 @@ const runHuggingFaceTranslation = async ({ text, model }) => {
   const responseBody = await response.json().catch(() => ({}));
 
   if (!response.ok || responseBody.err) {
-    const error =
-      responseBody.err ?? `Hugging Face API returned ${response.status}`;
-    throw new Error(error);
+    throw new Error(`Hugging Face API returned ${response.status}`);
   }
 
   const translation = getHuggingFaceTranslation(responseBody);
@@ -231,13 +231,13 @@ const runHuggingFaceTranslation = async ({ text, model }) => {
 };
 
 const getApiErrorMessage = (providerName, response, responseBody) => {
-  const error = responseBody?.error;
+  const providerErrorCode =
+    responseBody?.error?.code ?? responseBody?.error?.status;
+  const status = providerErrorCode
+    ? `${response.status}/${providerErrorCode}`
+    : response.status;
 
-  if (typeof error === "string") {
-    return error;
-  }
-
-  return error?.message ?? `${providerName} API returned ${response.status}`;
+  return `${providerName} API returned ${status}`;
 };
 
 const cleanCompletionText = ({ text, emptyErrorMessage }) => {
@@ -419,8 +419,6 @@ const runRotatingCompletion = async ({ messages, emptyErrorMessage }) => {
     throw new Error("No AI provider API key is configured");
   }
 
-  const errors = [];
-
   for (const provider of getRotatedProviders(providers)) {
     try {
       return await provider.runCompletion({ messages, emptyErrorMessage });
@@ -429,12 +427,11 @@ const runRotatingCompletion = async ({ messages, emptyErrorMessage }) => {
         error?.name === "AbortError"
           ? "request timed out"
           : error?.message ?? "unknown error";
-      errors.push(`${provider.name}: ${message}`);
       console.warn(`${provider.name} provider failed: ${message}`);
     }
   }
 
-  throw new Error(`All AI providers failed. ${errors.join(" | ")}`);
+  throw new Error("All AI providers failed");
 };
 
 const runAiTranslation = async ({
@@ -558,11 +555,11 @@ const translateText = async (req, res) => {
     });
   } catch (error) {
     if (error?.name === "AbortError") {
-      return sendTranslationError(res, "Translation request timed out", 504);
+      return sendTranslationError(res, USER_TRANSLATION_ERROR_MESSAGE, 504);
     }
 
     console.error("Translation error", error);
-    return sendTranslationError(res, "Failed to translate text", 502);
+    return sendTranslationError(res, USER_TRANSLATION_ERROR_MESSAGE, 502);
   }
 };
 
