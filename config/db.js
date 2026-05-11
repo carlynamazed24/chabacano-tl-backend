@@ -52,9 +52,10 @@ const connectToDatabase = async () => {
     const connection = await pool.getConnection();
     connection.release();
     console.log(`Connected to the ${APP_ENV} database successfully.`);
+    return true;
   } catch (err) {
     console.error("Database connection failed:", err.message);
-    process.exit(1);
+    return false;
   }
 };
 

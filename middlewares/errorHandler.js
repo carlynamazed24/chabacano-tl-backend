@@ -1,3 +1,5 @@
+import { handleCommonRequest } from "../utils/cors.js";
+
 const databaseConnectionErrorCodes = new Set([
   "ECONNREFUSED",
   "ECONNRESET",
@@ -14,6 +16,8 @@ const isDatabaseConnectionError = (err) => {
 };
 
 const errorHandler = (err, req, res, next) => {
+  handleCommonRequest(req, res);
+
   if (isDatabaseConnectionError(err)) {
     console.error("Database connection error", {
       code: err.code,
