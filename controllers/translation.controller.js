@@ -96,6 +96,37 @@ const cleanModelTranslation = (text) => {
     .trim();
 };
 
+const sentenceEndingPunctuationPattern = /[.!?]+$/;
+
+const getSentenceEndingPunctuation = (text) => {
+  return text.trim().match(sentenceEndingPunctuationPattern)?.[0] ?? "";
+};
+
+const matchSourceTerminalPunctuation = ({ sourceText, translation }) => {
+  const alignLinePunctuation = (sourceLine, translationLine) => {
+    const sourcePunctuation = getSentenceEndingPunctuation(sourceLine);
+    const translationWithoutEndingPunctuation = translationLine
+      .trimEnd()
+      .replace(sentenceEndingPunctuationPattern, "");
+
+    return sourcePunctuation
+      ? `${translationWithoutEndingPunctuation}${sourcePunctuation}`
+      : translationWithoutEndingPunctuation;
+  };
+
+  const sourceLines = sourceText.split("\n");
+  const translationLines = translation.split("\n");
+
+  if (sourceLines.length === translationLines.length) {
+    return translationLines
+      .map((line, index) => alignLinePunctuation(sourceLines[index], line))
+      .join("\n")
+      .trim();
+  }
+
+  return alignLinePunctuation(sourceText, translation).trim();
+};
+
 const fetchWithTimeout = async (url, options) => {
   const controller = new AbortController();
   const timeout = setTimeout(
@@ -121,6 +152,7 @@ const buildTranslationPrompt = ({ text, sourceLanguage, targetLanguage }) => {
     "- Return only the translated text.",
     "- Do not include labels, explanations, alternatives, notes, markdown, or quotation marks around the answer.",
     "- Preserve the original meaning, tone, names, numbers, punctuation, and line breaks where natural.",
+    "- Match sentence-ending punctuation to the source: if the source ends without punctuation, do not add a final period, question mark, or exclamation mark.",
     "- Treat source casing as meaningful emphasis and reconstruct the translated sentence so the matching translated words keep that casing pattern after any grammar-driven reordering.",
     "- Keep fully uppercase source words fully uppercase in their translated equivalent, keep title-case emphasis where natural, and use normal target-language casing for the rest.",
     '- Example: if translating "KUMAIN ka na?" to English, return "Did you EAT yet?"',
@@ -150,6 +182,7 @@ const buildPolishPrompt = ({
     "- Do not change the meaning or add new information.",
     "- Keep the translation in the target language.",
     "- Fix obvious casing, punctuation, spacing, and accent issues.",
+    "- Match sentence-ending punctuation to the source: if the source ends without punctuation, remove any final period, question mark, or exclamation mark from the polished translation.",
     "- Match source casing/emphasis where natural: fully uppercase source words should make their translated equivalent fully uppercase, title-case emphasis should remain title-case, and ordinary text should use normal sentence casing.",
     "- Chabacano means Philippine Chabacano/Chavacano, a Spanish-based creole, not Cebuano.",
     "",
@@ -547,11 +580,15 @@ const translateText = async (req, res) => {
           text,
           ...translationPair,
         });
+    const finalTranslation = matchSourceTerminalPunctuation({
+      sourceText: text,
+      translation,
+    });
 
     return res.json({
       err: null,
-      translation,
-      result: translation,
+      translation: finalTranslation,
+      result: finalTranslation,
     });
   } catch (error) {
     if (error?.name === "AbortError") {
